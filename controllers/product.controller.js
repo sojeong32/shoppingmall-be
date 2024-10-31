@@ -41,16 +41,16 @@ productController.getProducts = async (req, res) => {
     let query = Product.find(cond);
     let response = { status: "success" };
 
-    // totalPageNum을 항상 계산하여 응답에 포함
-    const totalItemNum = await Product.find(cond).countDocuments();
-    const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
-    response.totalPageNum = totalPageNum;
+    // // totalPageNum을 항상 계산하여 응답에 포함
+    // const totalItemNum = await Product.find(cond).countDocuments();
+    // const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
+    // response.totalPageNum = totalPageNum;
 
     if (page) {
       query.skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE);
       // 최종 몇 개 페이지인지
       // 데이터가 총 몇 개 있는지
-      const totalItemNum = await Product.find(cond).count();
+      const totalItemNum = await Product.find(cond).countDocuments();
       // 데이터 총 갯수 / PAGE_SIZE
       const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
       response.totalPageNum = totalPageNum;
