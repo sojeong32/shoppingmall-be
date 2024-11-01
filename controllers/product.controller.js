@@ -74,7 +74,7 @@ productController.updateProduct = async (req, res) => {
       stock,
       status,
     } = req.body;
-    const product = Product.findByIdAndUpdate(
+    const product = await Product.findByIdAndUpdate(
       { _id: productId },
       { sku, name, size, image, price, description, category, stock, status },
       { new: true }
