@@ -86,4 +86,18 @@ productController.updateProduct = async (req, res) => {
   }
 };
 
+productController.deleteProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const product = await Product.findByIdAndDelete(
+      { _id: productId },
+      { isDeleted: true }
+    );
+    if (!product) throw new Error("상품을 찾을 수 없습니다.");
+    res.status(200).json({ status: "success" });
+  } catch (error) {
+    return res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
 module.exports = productController;
