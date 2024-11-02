@@ -105,11 +105,7 @@ productController.getProductDetail = async (req, res) => {
     const productId = req.params.id;
     const product = await Product.findOne({ _id: productId, isDeleted: false });
 
-    if (!product) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "Product not found" });
-    }
+    if (!product) throw new Error("상품이 존재하지 않습니다.");
 
     res.status(200).json({ status: "success", data: product });
   } catch (error) {
