@@ -22,5 +22,6 @@ router.delete(
   authController.checkAdminPermission,
   productController.deleteProduct
 );
+router.get("/:id", productController.getProductDetail);
 
 module.exports = router;
