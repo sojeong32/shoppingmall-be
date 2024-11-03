@@ -24,5 +24,5 @@ cartSchema.method.toJSON = function () {
   return obj;
 };
 
-const Cart = mongoose.model("Cart", productSchema);
+const Cart = mongoose.model("Cart", cartSchema);
 module.exports = Cart;
