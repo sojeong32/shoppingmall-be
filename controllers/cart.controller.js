@@ -45,4 +45,21 @@ cartController.getCart = async (req, res) => {
   }
 };
 
+cartController.deleteItemFromCart = async (req, res) => {
+  try {
+    const { userId } = req;
+    const itemId = req.params.id;
+
+    const cart = await Cart.findOne({ userId });
+    if (!cart) throw new Error("카트를 찾을 수 없습니다.");
+
+    cart.items = cart.items.filter((item) => item._id.equals(itemId));
+    await cart.save();
+
+    res.status(200).json({ status: "success", data: cart.items });
+  } catch (error) {
+    res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
 module.exports = cartController;
