@@ -15,5 +15,6 @@ router.put(
   authController.authenticate,
   cartController.updateItemFromCart
 );
+router.get("/qty", authController.authenticate, cartController.getCartQty);
 
 module.exports = router;

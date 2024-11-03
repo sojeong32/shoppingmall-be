@@ -89,4 +89,20 @@ cartController.updateItemFromCart = async (req, res) => {
   }
 };
 
+cartController.getCartQty = async (req, res) => {
+  try {
+    const { userId } = req;
+    const cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return res.status(200).json({ status: "success", cartItemQty: 0 });
+    }
+
+    const totalQty = cart.items.reduce((sum, item) => sum + item.qty, 0);
+
+    res.status(200).json({ status: "success", cartItemQty: totalQty });
+  } catch (error) {
+    res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
 module.exports = cartController;
