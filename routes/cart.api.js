@@ -10,5 +10,10 @@ router.delete(
   authController.authenticate,
   cartController.deleteItemFromCart
 );
+router.put(
+  "/:id",
+  authController.authenticate,
+  cartController.updateItemFromCart
+);
 
 module.exports = router;
