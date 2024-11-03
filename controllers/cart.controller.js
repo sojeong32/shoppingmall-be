@@ -77,10 +77,10 @@ cartController.updateItemFromCart = async (req, res) => {
     });
     if (!cart) throw new Error("카트를 찾을 수 없습니다.");
 
-    cart.items = cart.items.find((item) => item._id.equals(itemId));
-    if (!cart.items) throw new Error("아이템을 찾을 수 없습니다.");
+    const item = cart.items.find((item) => item._id.equals(itemId));
+    if (!item) throw new Error("아이템을 찾을 수 없습니다.");
 
-    cart.items.qty = qty;
+    item.qty = qty;
     await cart.save();
 
     res.status(200).json({ status: "success", data: cart.items });
