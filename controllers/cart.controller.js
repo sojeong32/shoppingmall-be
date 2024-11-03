@@ -24,9 +24,12 @@ cartController.addItemToCart = async (req, res) => {
     }
     cart.items = [...cart.items, { productId, size, qty }];
     await cart.save();
+
+    const totalQty = cart.items.reduce((sum, item) => sum + item.qty, 0);
+
     res
       .status(200)
-      .json({ status: "success", data: cart, cartItemQty: cart.items.length });
+      .json({ status: "success", data: cart, cartItemQty: totalQty });
   } catch (error) {
     return res.status(400).json({ status: "fail", error: error.message });
   }
