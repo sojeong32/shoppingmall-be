@@ -50,7 +50,10 @@ cartController.deleteItemFromCart = async (req, res) => {
     const { userId } = req;
     const itemId = req.params.id;
 
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne({ userId }).populate({
+      path: "items",
+      populate: { path: "productId", model: "Product" },
+    });
     if (!cart) throw new Error("카트를 찾을 수 없습니다.");
 
     cart.items = cart.items.filter((item) => !item._id.equals(itemId));
