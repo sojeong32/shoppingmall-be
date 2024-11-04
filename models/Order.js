@@ -8,7 +8,7 @@ const orderSchema = Schema(
     contact: { type: Object, required: true },
     userId: { type: mongoose.ObjectId, ref: User, required: true },
     status: { type: String, default: "preparing" },
-    orderNumber: { type: String },
+    orderNum: { type: String },
     totalPrice: { type: Number, required: true, default: 0 },
     items: [
       {

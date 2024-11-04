@@ -32,7 +32,8 @@ orderController.createOrder = async (req, res) => {
       items: orderList,
       orderNum: randomStringGenerator(),
     });
-
+    console.log("새로운주문", newOrder);
+    console.log("생성된 orderNum:", newOrder.orderNum);
     await newOrder.save();
     res.status(200).json({ status: "success", orderNum: newOrder.orderNum });
   } catch (error) {

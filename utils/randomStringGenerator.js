@@ -1,11 +1,10 @@
 const randomStringGenerator = () => {
-  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-  const randomString = Array.from(
-    { length: 10 },
-    () => characters[Math.floor(Math.random() * characters.length)]
+  const randomString = Array.from({ length: 10 }, () =>
+    Math.floor(Math.random() * 36).toString(36)
   ).join(""); // 배열을 문자열로 변환
 
+  console.log("Generated Random String:", randomString); // 디버깅 로그 추가
   return randomString;
-}; // orderNum 만들 때 씀
+};
 
 module.exports = { randomStringGenerator };
