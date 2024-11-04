@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const orderSchema = Schema(
   {
     shipTo: { type: Object, required: true },
-    contact: { type: String, required: true },
+    contact: { type: Object, required: true },
     userId: { type: mongoose.ObjectId, ref: User, required: true },
     status: { type: String, default: "preparing" },
     orderNumber: { type: String },
