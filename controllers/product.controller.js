@@ -133,7 +133,7 @@ productController.checkStock = async (item) => {
   return { isVerify: true };
 };
 
-productController.checkItemListStock = async (req, res) => {
+productController.checkItemListStock = async (itemList) => {
   const insufficientStockItems = []; // 재고가 불충분한 아이템을 저장할 예정
   // 재고 확인 로직
   // 배열을 여러개의 await으로 한번에 불러오려면 Promise.all을 써서 병렬화(?)한다.
