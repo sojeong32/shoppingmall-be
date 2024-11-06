@@ -35,6 +35,7 @@ orderController.createOrder = async (req, res) => {
     console.log("새로운주문", newOrder);
     console.log("생성된 orderNum:", newOrder.orderNum);
     await newOrder.save();
+    // save후에 카트를 비워주자
     res.status(200).json({ status: "success", orderNum: newOrder.orderNum });
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
