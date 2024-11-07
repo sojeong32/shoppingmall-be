@@ -42,4 +42,76 @@ orderController.createOrder = async (req, res) => {
   }
 };
 
+orderController.getOrders = async (req, res) => {
+  try {
+    const { userId } = req;
+    const { page, ordernum, limit = 3 } = req.query;
+
+    const query = { userId };
+    if (ordernum) {
+      query.orderNum = { $regex: ordernum, $options: "i" };
+    }
+
+    const totalOrders = await Order.countDocuments(query);
+    let orders;
+
+    if (page) {
+      const totalPageNum = Math.ceil(totalOrders / limit);
+      orders = await Order.find(query)
+        .populate("userId", "name email")
+        .populate({
+          path: "items.productId",
+        })
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+
+      res.status(200).json({
+        status: "success",
+        orders,
+        total: totalOrders,
+        pages: totalPageNum,
+      });
+    } else {
+      orders = await Order.find(query)
+        .populate({
+          path: "items.productId",
+        })
+        .sort({ createdAt: -1 })
+        .exec();
+      res.status(200).json({
+        status: "success",
+        orders,
+        total: totalOrders,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+orderController.updateOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
+
+    if (!order) {
+      const error = new Error("주문이 없습니다.");
+      error.status = 404;
+      return next(error);
+    }
+    res.status(200).json({ status: "success", order });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 module.exports = orderController;
