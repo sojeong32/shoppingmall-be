@@ -2,6 +2,7 @@ const Order = require("../models/Order");
 const productController = require("./product.controller");
 const { randomStringGenerator } = require("../utils/randomStringGenerator");
 const orderController = {};
+const PAGE_SIZE = 3;
 
 orderController.createOrder = async (req, res) => {
   try {
@@ -45,72 +46,72 @@ orderController.createOrder = async (req, res) => {
 orderController.getOrders = async (req, res) => {
   try {
     const { userId } = req;
-    const { page, ordernum, limit = 3 } = req.query;
 
-    const query = { userId };
-    if (ordernum) {
-      query.orderNum = { $regex: ordernum, $options: "i" };
-    }
+    const orders = await Order.find({ userId }).populate({
+      path: "items",
+      populate: { path: "productId", model: "Product" },
+    });
 
-    const totalOrders = await Order.countDocuments(query);
-    let orders;
+    const totalItemNum = await Order.find({ userId }).countDocuments();
+
+    const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
+
+    res.status(200).json({ status: "success", data: orders, totalPageNum });
+  } catch (error) {
+    res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
+orderController.getOrderList = async (req, res) => {
+  try {
+    let { page, ordernum } = req.query;
+
+    const cond = ordernum
+      ? {
+          orderNum: { $regex: ordernum, $options: "i" },
+        }
+      : {};
+
+    let query = Order.find(cond)
+      .populate("userId", "email name")
+      .populate({
+        path: "items",
+        populate: { path: "productId", select: "name" },
+      });
+    let response = { status: "success" };
 
     if (page) {
-      const totalPageNum = Math.ceil(totalOrders / limit);
-      orders = await Order.find(query)
-        .populate("userId", "name email")
-        .populate({
-          path: "items.productId",
-        })
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+      query.skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE);
 
-      res.status(200).json({
-        status: "success",
-        orders,
-        total: totalOrders,
-        pages: totalPageNum,
-      });
-    } else {
-      orders = await Order.find(query)
-        .populate({
-          path: "items.productId",
-        })
-        .sort({ createdAt: -1 })
-        .exec();
-      res.status(200).json({
-        status: "success",
-        orders,
-        total: totalOrders,
-      });
+      const totalItemNum = await Order.find(cond).countDocuments();
+      const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
+      response.totalPageNum = totalPageNum;
     }
+
+    const orderList = await query.exec();
+    response.data = orderList;
+
+    res.status(200).json(response);
   } catch (error) {
-    console.log(error);
-    next(error);
+    res.status(400).json({ status: "fail", message: error.message });
   }
 };
 
 orderController.updateOrder = async (req, res) => {
   try {
-    const { orderId } = req.params;
+    const orderId = req.params.id;
     const { status } = req.body;
+
     const order = await Order.findByIdAndUpdate(
-      orderId,
+      { _id: orderId },
       { status },
       { new: true }
     );
 
-    if (!order) {
-      const error = new Error("주문이 없습니다.");
-      error.status = 404;
-      return next(error);
-    }
-    res.status(200).json({ status: "success", order });
+    if (!order) throw new Error("주문을 찾을 수 없습니다.");
+    res.status(200).json({ status: "success", data: order });
   } catch (error) {
-    console.log(error);
-    next(error);
+    res.status(404).json({ status: "fail", data: error.message });
   }
 };
 
